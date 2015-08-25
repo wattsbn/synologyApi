@@ -17,46 +17,42 @@ Server.prototype.updateEndpoints = function() {
         uri += endpoint.name + ',';
         map[endpoint.name] = endpoint;
     });
-    var deferredResult = q.defer();
-    requestHelper.makeRequest(this, endpoints.info, uri).then(function(result) {
-        if (!result || !result.success) { return deferredResult.reject(); }
+    return requestHelper.makeRequest(this, endpoints.info, uri).then(function(result) {
         _.each(result.data, function(data, name) {
             map[name].update(data);
         });
-        deferredResult.resolve();
-    }, function(error) {
-        console.log(error);
-        deferredResult.reject();
     });
-    return deferredResult.promise;
 };
 
 Server.prototype.authenticate = function(username, password) {
     var uri = 'method=login&account=' + username + '&passwd=' + password;
     uri += '&session=DownloadStation&format=sid';
-    var deferredResult = q.defer();
-    requestHelper.makeRequest(this, endpoints.auth, uri).then(function(result) {
-        if (!result || !result.success) { return deferredResult.reject(); }
+    return requestHelper.makeRequest(this, endpoints.auth, uri).then(function(result) {
         this.sid = result.data.sid;
-        deferredResult.resolve();
-    }.bind(this), function(error) {
-        console.log(error);
-        deferredResult.reject();
-    });
-    return deferredResult.promise;
+    }.bind(this));
+};
+
+Server.prototype.logout = function() {
+    var uri = 'method=logout&_sid=' + this.sid;
+    uri += '&session=DownloadStation';
+    return requestHelper.makeRequest(this, endpoints.auth, uri).then(function() {
+        this.sid = null;
+    }.bind(this));
 };
 
 Server.prototype.getTaskList = function() {
     var uri = 'method=list&_sid=' + this.sid;
-    var deferredResult = q.defer();
-    requestHelper.makeRequest(this, endpoints.downloadTasks, uri).then(function(result) {
-        if (!result || !result.success) { return deferredResult.reject(); }
-        deferredResult.resolve(result.data);
-    }.bind(this), function(error) {
-        console.log(error);
-        deferredResult.reject();
+    return requestHelper.makeRequest(this, endpoints.downloadTasks, uri).then(function(result) {
+        return result.data;
     });
-    return deferredResult.promise;
+};
+
+Server.prototype.getTaskDetails = function(taskId) {
+    var uri = 'method=getinfo&_sid=' + this.sid;
+    uri += '&additional=detail,transfer,file,tracker,peer&id=' + taskId;
+    return requestHelper.makeRequest(this, endpoints.downloadTasks, uri).then(function(result) {
+        return result.data;
+    });
 };
 
 module.exports = Server;

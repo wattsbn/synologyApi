@@ -40,8 +40,11 @@ Server.prototype.logout = function() {
     }.bind(this));
 };
 
-Server.prototype.getTaskList = function() {
+Server.prototype.getTaskList = function(full) {
     var uri = 'method=list&_sid=' + this.sid;
+    if (full) {
+        uri += '&additional=detail,transfer,file,tracker,peer';
+    }
     return requestHelper.makeRequest(this, endpoints.downloadTasks, uri).then(function(result) {
         return result.data;
     });

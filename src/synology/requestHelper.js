@@ -33,8 +33,9 @@ RequestHelper.prototype.makeRequest = function(server, endPoint, uri) {
         }
 
         if (!result.success) {
-            throw 'The request failed: ' + result;
+            throw 'The request failed: ' + JSON.stringify(result);
         }
+        return result;
     });
 };
 

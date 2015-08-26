@@ -1,6 +1,6 @@
 'use strict';
 var synology = require('./synology');
-var server = synology.getServer('68.39.81.154', '5000');
+var server = synology.getServer('example.com', '5000');
 
 server.updateEndpoints().then(function() {
     return server.authenticate('admin', 'admin');

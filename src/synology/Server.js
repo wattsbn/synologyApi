@@ -59,6 +59,30 @@ Server.prototype.getTaskDetails = function (taskId) {
     });
 };
 
+function getIdParameter(items) {
+     var ids = '';
+    for (var item of items) {
+        if (!item.id) { continue; }
+        if (ids) {
+            ids += ',';
+        }
+
+        ids += item.id;
+    }
+    
+    if (ids) {
+        ids = '&id=' + ids;
+    }
+    
+    return ids;
+}
+
+Server.prototype.deleteTasks = function (tasks) {
+    var uri = 'method=delete&force_complete=false&_sid=' + this.sid;
+    uri += getIdParameter(tasks);
+    return requestHelper.makeRequest(this, endpoints.downloadTasks, uri);
+};
+
 Server.prototype.downloadTorrent = function (task, path) {
     var server = this;
     var uri = 'method=download&_sid=' + server.sid;

@@ -2,8 +2,8 @@
 var HTTP = require('q-io/http');
 
 function parseResponse(response) {
-    return response.body.read().then(function (something) {
-        var body = something.toString('UTF-8');
+    return response.body.read().then(function (result) {
+        var body = result.toString('UTF-8');
         var parsed;
         try {
             parsed = JSON.parse(body);

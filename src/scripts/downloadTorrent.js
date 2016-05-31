@@ -9,18 +9,13 @@ scriptHelper.setupServer().then(function (result) {
 }).then(function () {
     return server.getTaskList();
 }).then(function (result) {
-    let promises = [];
-    for (let task of result.tasks) {
-        if (task.username === 'admin') { continue; }
-        
-    }
     var task = result.tasks[0];
     return server.getTaskDetails(task.id);
 }).then(function (result) {
     var task = result.tasks[0];
     return server.downloadTorrent(task, 'temp');
 }).then(function (filePath) {
-    console.log('created:', filePath);
+    console.log('downloaded:', filePath);
 }).catch(function (error) {
     console.log(error);
 }).finally(function () {

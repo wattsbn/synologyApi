@@ -1,8 +1,7 @@
 'use strict';
-
+var q = require('q');
 var scriptHelper = require('./scriptHelper');
 
-var status = {};
 var server = null;
 
 scriptHelper.setupServer().then(function (result) {
@@ -10,6 +9,11 @@ scriptHelper.setupServer().then(function (result) {
 }).then(function () {
     return server.getTaskList();
 }).then(function (result) {
+    let promises = [];
+    for (let task of result.tasks) {
+        if (task.username === 'admin') { continue; }
+        
+    }
     var task = result.tasks[0];
     return server.getTaskDetails(task.id);
 }).then(function (result) {

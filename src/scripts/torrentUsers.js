@@ -2,7 +2,7 @@
 
 var scriptHelper = require('./scriptHelper');
 
-var status = {};
+var users = {};
 var server = null;
 
 scriptHelper.setupServer().then(function(result) {
@@ -11,13 +11,10 @@ scriptHelper.setupServer().then(function(result) {
     return server.getTaskList();
 }).then(function (result) {
     for (var task of result.tasks) {
-        var key = (task.status_extra && task.status_extra.error_detail) || task.status;
-        if (key) {
-            status[key] = status[key] ? status[key] + 1 : 1;
-        }
+        users[task.username] = users[task.username] ? users[task.username] + 1 : 1;
     }
     
-    console.log(JSON.stringify(status));
+    console.log(JSON.stringify(users));
 }).catch(function (error) {
     console.log(error);
 }).finally(function () {

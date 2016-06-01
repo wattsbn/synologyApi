@@ -51,16 +51,8 @@ Server.prototype.getTaskList = function (full) {
     });
 };
 
-Server.prototype.getTaskDetails = function (taskId) {
-    var uri = 'method=getinfo&_sid=' + this.sid;
-    uri += '&additional=detail,transfer,file,tracker,peer&id=' + taskId;
-    return requestHelper.makeRequest(this, endpoints.downloadTasks, uri).then(function (result) {
-        return result.data;
-    });
-};
-
 function getIdParameter(items) {
-     var ids = '';
+    var ids = '';
     for (var item of items) {
         if (!item.id) { continue; }
         if (ids) {
@@ -69,16 +61,31 @@ function getIdParameter(items) {
 
         ids += item.id;
     }
-    
+
     if (ids) {
         ids = '&id=' + ids;
     }
-    
+
     return ids;
 }
 
+Server.prototype.getTaskDetails = function (tasks) {
+    var uri = 'method=getinfo&_sid=' + this.sid;
+    uri += '&additional=detail,transfer,file,tracker,peer';
+    uri += getIdParameter(tasks);
+    return requestHelper.makeRequest(this, endpoints.downloadTasks, uri).then(function (result) {
+        return result.data;
+    });
+};
+
 Server.prototype.deleteTasks = function (tasks) {
     var uri = 'method=delete&force_complete=false&_sid=' + this.sid;
+    uri += getIdParameter(tasks);
+    return requestHelper.makeRequest(this, endpoints.downloadTasks, uri);
+};
+
+Server.prototype.pauseTasks = function (tasks) {
+    var uri = 'method=pause&_sid=' + this.sid;
     uri += getIdParameter(tasks);
     return requestHelper.makeRequest(this, endpoints.downloadTasks, uri);
 };
@@ -87,16 +94,20 @@ Server.prototype.downloadTorrent = function (task, path) {
     var server = this;
     var uri = 'method=download&_sid=' + server.sid;
     uri += '&additional=detail,transfer,file,tracker,peer&task_id=' + task.id;
-    return FS.makeTree(path).then(function () {
+    // return FS.makeTree(path).then(function () {
+        var filePath = FS.join(path, task.additional.detail.uri);
+        // if (FS.exists(filePath)) {
+        //     return filePath;
+        // }
+
         return requestHelper.makeRawRequest(server, endpoints.downloadTasksSource, uri).then(function (response) {
             return response.body.read().then(function (result) {
-                var filePath = FS.join(path, task.additional.detail.uri);
                 return FS.write(filePath, result).then(function () {
                     return filePath;
                 });
             });
         });
-    });
+    // });
 };
 
 module.exports = Server;

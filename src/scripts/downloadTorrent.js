@@ -1,5 +1,4 @@
 'use strict';
-var q = require('q');
 var scriptHelper = require('./scriptHelper');
 
 var server = null;

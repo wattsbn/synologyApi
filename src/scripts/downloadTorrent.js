@@ -9,7 +9,7 @@ scriptHelper.setupServer().then(function (result) {
     return server.getTaskList();
 }).then(function (result) {
     var task = result.tasks[0];
-    return server.getTaskDetails(task.id);
+    return server.getTaskDetails([task]);
 }).then(function (result) {
     var task = result.tasks[0];
     return server.downloadTorrent(task, 'temp');
